@@ -1,0 +1,20 @@
+{"1.1.0",
+[{<<"cowboy">>,{pkg,<<"cowboy">>,<<"2.4.0">>},0},
+ {<<"cowlib">>,{pkg,<<"cowlib">>,<<"2.3.0">>},1},
+ {<<"epmd">>,
+  {git,"https://github.com/erlang/epmd",
+       {ref,"4d1a595b9d5c32fc0e55f462da381de62de23bf0"}},
+  0},
+ {<<"grisp">>,
+  {git,"git://github.com/grisp/grisp.git",
+       {ref,"23860074abb8de6c77cee5a11e1a5b2685060260"}},
+  0},
+ {<<"mapz">>,{pkg,<<"mapz">>,<<"0.3.0">>},1},
+ {<<"ranch">>,{pkg,<<"ranch">>,<<"1.5.0">>},1}]}.
+[
+{pkg_hash,[
+ {<<"cowboy">>, <<"F1B72FABE9C8A5FC64AC5AC85FB65474D64733D1DF52A26FAD5D4BA3D9F70A9F">>},
+ {<<"cowlib">>, <<"BBD58EF537904E4F7C1DD62E6AA8BC831C8183CE4EFA9BD1150164FE15BE4CAA">>},
+ {<<"mapz">>, <<"438D24746CE5A252101E00B2032EFDF7FC69EB32689D3B805DE5E6DD7F52614F">>},
+ {<<"ranch">>, <<"F04166F456790FEE2AC1AA05A02745CC75783C2BFB26D39FAF6AEFC9A3D3A58A">>}]}
+].
