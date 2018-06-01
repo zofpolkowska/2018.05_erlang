@@ -25,6 +25,6 @@ detect() ->
     [child_spec(ID) || ID <- IDs].
 
 child_spec(ID) ->
-    #{ id => ID,
+    #{ id => list_to_atom(ID),
      start => {rolnik_thermometer, start_link, [ID]},
      modules => [rolnik_thermometer]}.

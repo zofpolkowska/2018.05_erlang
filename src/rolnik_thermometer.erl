@@ -13,14 +13,14 @@
 
 %--- API -----------------------------------------------------------------------
 start_link(ID) ->
-    gen_statem:start_link(?MODULE, [ID], []).
+    gen_statem:start_link({local, ?MODULE}, ?MODULE, [ID], []).
 
 %--- Callbacks -----------------------------------------------------------------
 callback_mode() -> state_functions.
 
 init([ID]) ->
     {ok, Interval} = application:get_env(rolnik, sample_interval),
-    {ok, reachable, #device{id = ID}, [{state_timeout,Interval,{read, Interval}}]}.
+    {ok, reachable, #device{id = ID, type = thermometer}, [{state_timeout,Interval,{read, Interval}}]}.
 
 reachable(state_timeout, {read, Interval}, T) ->
     _Last = T#device.sample,

@@ -7,9 +7,11 @@
 -export([init/1, handle_event/2, handle_call/2, handle_info/2,
          terminate/2, code_change/3, format_status/2]).
 
+%-- Callbacks ------------------------------------------------------------------
 init([]) ->
     L = env(rolnik, folsom),
-    M = #metric{name = proplists:get_value(gauge, L, temperature),
+    [Name] = proplists:get_value(gauge, L),
+    M = #metric{name = Name,
                 sample_interval = env(rolnik, sample_interval),
                 refresh_interval = env(rolnik, refresh_interval)},
     folsom_metrics:new_gauge(M#metric.name),
