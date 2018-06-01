@@ -6,9 +6,19 @@
     {applications, [
         kernel,
         stdlib,
-        grisp
+        grisp,
+        bear,
+        folsom
+        
     ]},
-    {env,[]},
+    {env,
+     [
+      {folsom, [{gauge, [temperature]}]},
+      {sample_interval, 1000}, %miliseconds  
+      {refresh_interval, 5}, %seconds
+      {time_range, 24} % hours
+     ]},
+
     {modules, []},
 
     {maintainers, []},

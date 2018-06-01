@@ -17,16 +17,14 @@ start_link() -> supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 %--- Callbacks -----------------------------------------------------------------
 
 init([]) -> 
-    Devices_Supervisor = #{id => rolnik_thermometer_sup,      
-                        start => {rolnik_thermometer_sup, start_link, []},     
-                        restart => permanent,   
+    Devices_Supervisor = #{id => rolnik_devices_sup,
+                        start => {rolnik_devices_sup, start_link, []},
                         type => supervisor,
-                        modules => [rolnik_thermometer_sup]},
-    Event_Manager = #{id => rolnik_event,      
-                        start => {rolnik_event, start_link, []},     
-                        restart => permanent,   
+                        modules => [rolnik_devices_sup]},
+    Event_Manager = #{id => rolnik_event,
+                        start => {rolnik_event, start_link, []},
                         type => worker,
                         modules => [rolnik_event]},
-    {ok, {#{strategy => one_for_one}, 
+    {ok, {#{strategy => one_for_one},
           [Devices_Supervisor, Event_Manager]}}.
 

@@ -1,8 +1,8 @@
--module(rolnik_thermometer_sup).
+-module(rolnik_devices_sup).
 -behavior(supervisor).
 
 %API
--export([start_link/0, read_temperature/0]).
+-export([start_link/0, detect/0]).
 
 %Callbacks
 -export([init/1]).
@@ -11,9 +11,6 @@
 
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
-
-read_temperature() ->
-    read_temperature(pids()).
 
 %--- Callbacks -----------------------------------------------------------------
 
@@ -28,15 +25,6 @@ detect() ->
     [child_spec(ID) || ID <- IDs].
 
 child_spec(ID) ->
-    {ID,
-    {rolnik_thermometer, start_link, [ID]},
-    permanent,
-    5000,
-    worker,
-    [rolnik_thermometer]}.
-
-pids() ->
-    [Pid || {_,Pid,worker,[rolnik_thermometer]} <- supervisor:which_children(?MODULE)].
-
-read_temperature(Pids) ->
-    [gen_statem:call(Pid, read_temperature) || Pid <- Pids].
+    #{ id => ID,
+     start => {rolnik_thermometer, start_link, [ID]},
+     modules => [rolnik_thermometer]}.

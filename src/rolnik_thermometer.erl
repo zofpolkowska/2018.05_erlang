@@ -2,47 +2,57 @@
 
 -behaviour(gen_statem).
 
--include("../include/thermometer.hrl").
+-include("../include/records.hrl").
 
 % API
 -export([start_link/1]).
 
 % Callbacks
--export([callback_mode/0, init/1, terminate/3, code_change/4]).
--export([reachable/3]).
+-export([callback_mode/0, init/1, terminate/3, code_change/4, format_status/2]).
+-export([reachable/3, unreachable/3]). %TODO  unplugged/3
 
 %--- API -----------------------------------------------------------------------
 start_link(ID) ->
     gen_statem:start_link(?MODULE, [ID], []).
 
-
 %--- Callbacks -----------------------------------------------------------------
 callback_mode() -> state_functions.
 
 init([ID]) ->
-    {ok, reachable, #thermometer{id = ID}, [{state_timeout,10000,read_temperature}]}.
+    {ok, Interval} = application:get_env(rolnik, sample_interval),
+    {ok, reachable, #device{id = ID}, [{state_timeout,Interval,{read, Interval}}]}.
 
-reachable({call,Caller}, read_temperature, T) ->
-    Temp = read_temperature(T#thermometer.id),
-    Caller ! {ok, Temp},
-    {keep_state_and_data, [{state_timeout,10000,read}]};
+reachable(state_timeout, {read, Interval}, T) ->
+    _Last = T#device.sample,
+    Now = read_temperature(T),
+    case T#device.sample of
+        E when is_number(E) ->
+            rolnik_event:notify({update, Now}),
+            {next_state, reachable, Now, [{state_timeout,Interval,{read, Interval}}]};
+        _ ->
+            {next_state, unreachable, Now, [{state_timeout, Interval, {check, Interval}}]}
+    end.
 
-reachable(state_timeout, read_temperature, T) ->
-    Temp = read_temperature(T#thermometer.id),
-    N_T = T#thermometer{last_temperature = Temp}, 
-    rolnik_event:notify(update, N_T),
-    {next_state, reachable, N_T, [{state_timeout,1000,read_temperature}]}.
+unreachable(state_timeout, {check, Interval}, T) ->
+    rolnik_event:notify({error, T}), % TODO
+    {next_state, reachable, T, [{state_timeout, Interval, {read, Interval}}]}.
+
 
 terminate(_Reason, _State, _Data) ->
-    void.
+    ok.
 
+code_change(_OldVsn, OldState, OldData, _Extra) ->
+    {ok, OldState, OldData}.
 
-code_change(_OldVsn, State, Data, _Extra) ->
-    {ok, State, Data}.
+format_status(_Opt, Status) ->
+    Status.
 
 %--- Internal ------------------------------------------------------------------
 
-read_temperature(ID) ->
+read_temperature(T) ->
+    ID = T#device.id,
     onewire_ds18b20:convert(ID, 500),
-    onewire_ds18b20:temp(ID).
- 
+    Temp = onewire_ds18b20:temp(ID),
+    TempConverted = Temp, %TODO 
+    T#device{sample = TempConverted}.
+    
