@@ -17,4 +17,5 @@ start_link() ->
                                      ]),
     {ok, _} = cowboy:start_clear(http, [{port, 4321}], #{
                                                          env => #{dispatch => Dispatch}
-                                                        }).
+                                                        }),
+    rolnik_rest_sup_sup:start_link().

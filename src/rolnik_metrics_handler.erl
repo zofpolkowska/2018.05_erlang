@@ -11,19 +11,23 @@
 init([]) ->
     L = env(rolnik, folsom),
     [Name] = proplists:get_value(gauge, L),
-    M = 1,
+    State = 1,
     %TODO move to event create_metric/new
     folsom_metrics:new_gauge(Name),
-    {ok, M}.
+    {ok, State}.
 
-handle_event({update, T}, M) ->
+handle_event({update, T}, State) ->
     Temp = T#device.sample,
     folsom_metrics:notify({temperature, Temp}),
-    {ok, M};
+    rolnik_event:notify(bind),
+    {ok, State};
 
-handle_event({error, _T}, M) ->
+handle_event({error, _T}, State) ->
     % TODO
-    {ok, M};
+    {ok, State};
+
+handle_event(clean, State) ->
+    {ok, State};
 
 handle_event(_Event, State) ->
     {ok, State}.
@@ -49,6 +53,7 @@ env(App, Identifier) ->
     {ok, E} = application:get_env(App, Identifier),
     E.
 
-timestamp() ->
-    1528055618.
+
+
+
 

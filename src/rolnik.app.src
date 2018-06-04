@@ -11,8 +11,6 @@
         folsom,
         inets,
         crypto,
-        ranch,
-        cowlib,
         cowboy
     ]},
     {env,

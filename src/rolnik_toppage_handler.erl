@@ -15,8 +15,15 @@ content_types_provided(Req, State) ->
 
 handle(Req, State) ->
     Last = folsom_metrics:get_metric_value(temperature),
-    Body = list_to_binary(["\[\"",
-                           float_to_list(Last, [{decimals, 4}]),
-                           "\"\]"]),
-    {Body, Req, State}.
+    
+    %Body = list_to_binary(["\[\"",
+    %                       float_to_list(Last, [{decimals, 4}]),
+    %                       "\"\]"]),
+    Body = rolnik_event:call(rolnik_json_handler, {get, temperature}),
+    case is_binary(Body) of
+        false ->
+            {<<>>, Req, State};
+        true ->
+            {Body, Req, State}
+    end.
 

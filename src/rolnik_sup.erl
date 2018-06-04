@@ -25,6 +25,10 @@ init([]) ->
                         start => {rolnik_event, start_link, []},
                         type => worker,
                         modules => [rolnik_event]},
+    Rest_Supervisor = #{id => rolnik_rest_sup,
+                      start => {rolnik_rest_sup, start_link, []},
+                      type => supervisor,
+                      modules => [rolnik_rest_sup]},
     {ok, {#{strategy => one_for_one},
-          [Devices_Supervisor, Event_Manager]}}.
+          [Devices_Supervisor, Event_Manager, Rest_Supervisor]}}.
 

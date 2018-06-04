@@ -8,6 +8,7 @@
 start_link() ->
     {ok, Pid} = gen_event:start_link({local, ?MODULE}),
     attach_handler(rolnik_metrics_handler, []),
+    attach_handler(rolnik_json_handler, []),
     {ok, Pid}.
 
 attach_handler(Handler, Args) ->

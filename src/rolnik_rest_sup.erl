@@ -23,5 +23,17 @@ rest_init() ->
                              modules => [rolnik_rest]}).
 
 rest_stop() ->
-    supervisor:terminate_child(?MODULE,
-                              rolnik_rest).
+    try supervisor:terminate_child(?MODULE, rolnik_rest) of
+        _ ->
+            ok
+    catch
+        error:Error ->
+            ok;
+        exit:Exit ->
+            ok;
+        throw:Throw ->
+            ok;
+        _:_ ->
+            ok
+    end.
+
