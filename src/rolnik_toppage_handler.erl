@@ -1,4 +1,4 @@
--module(rolnik_metrics_json_handler).
+-module(rolnik_toppage_handler).
 
 -export([init/2]).
 -export([content_types_provided/2]).
