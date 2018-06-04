@@ -1,2 +1,6 @@
 -record(device, {id, type, sample}).
--record(metric, {name, sample_interval, refresh_interval}).
+-record(metric, {sample, timestamp}).
+-record(params, {size, cache}).
+
+-define(TIMEOUT, 60000).
+-define(CACHE, 100).

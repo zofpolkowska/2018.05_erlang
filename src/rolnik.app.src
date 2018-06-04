@@ -8,8 +8,12 @@
         stdlib,
         grisp,
         bear,
-        folsom
-        
+        folsom,
+        inets,
+        crypto,
+        ranch,
+        cowlib,
+        cowboy
     ]},
     {env,
      [

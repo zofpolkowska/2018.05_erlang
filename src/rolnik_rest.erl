@@ -1,0 +1,21 @@
+-module(rolnik_rest).
+
+% API
+-export([start_link/0]).
+
+%-- API -----------------------------------------------------------------------
+
+start_link() ->
+    Dispatch = cowboy_router:compile([
+                                      {'_', [
+                                             {"/", toppage_handler, []},
+                                             {"/search", rolnik_search_handler, []},
+                                             {"/annotations", rolnik_annotations_handler, []},
+                                             {"/query", rolnik_query_handler, []},
+
+                                             {"/metrics", rolnik_metrics_json_handler, []}
+                                            ]}
+                                     ]),
+    {ok, _} = cowboy:start_clear(http, [{port, 4321}], #{
+                                                         env => #{dispatch => Dispatch}
+                                                        }).

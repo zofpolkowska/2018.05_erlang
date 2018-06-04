@@ -1,7 +1,7 @@
 %--- Erlang Inet Configuration -------------------------------------------------
 
 % Add hosts
-{host, {192,168,1,3}, ["cactus"]}.
+{host, {X,X,X,X}, ["your-pc"]}.
 
 % Do not monitor the hosts file
 {hosts_file, ""}.
@@ -10,4 +10,4 @@
 {cache_size, 0}.
 
 % Specify lookup method
-{lookup, [file, dns]}.
+{lookup, [file, native]}.

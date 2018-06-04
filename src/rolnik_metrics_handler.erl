@@ -11,10 +11,9 @@
 init([]) ->
     L = env(rolnik, folsom),
     [Name] = proplists:get_value(gauge, L),
-    M = #metric{name = Name,
-                sample_interval = env(rolnik, sample_interval),
-                refresh_interval = env(rolnik, refresh_interval)},
-    folsom_metrics:new_gauge(M#metric.name),
+    M = 1,
+    %TODO move to event create_metric/new
+    folsom_metrics:new_gauge(Name),
     {ok, M}.
 
 handle_event({update, T}, M) ->
@@ -49,3 +48,7 @@ format_status(_Opt, Status) ->
 env(App, Identifier) ->
     {ok, E} = application:get_env(App, Identifier),
     E.
+
+timestamp() ->
+    1528055618.
+
