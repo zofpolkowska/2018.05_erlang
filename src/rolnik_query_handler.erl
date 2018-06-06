@@ -1,4 +1,4 @@
--module(rolnik_search_handler).
+-module(rolnik_query_handler).
 
 
 -export([init/2]).
@@ -37,8 +37,7 @@ resource_exists(Req, State) ->
     end.
 
 handle_post(Req0, State) ->
-    Metrics = rolnik_event:call(rolnik_timeseries_handler, metrics),
-    Body = jsone:encode(Metrics),
+    Body = rolnik_event:call(rolnik_timeseries_handler, {json, temperatures}),
     Req = cowboy_req:reply(200, #{
                                   <<"content-type">> => <<"application/json">>
                                  }, Body, Req0),
@@ -46,8 +45,7 @@ handle_post(Req0, State) ->
 
 
 handle_get(Req, State) ->
-    Metrics = rolnik_event:call(rolnik_timeseries_handler, metrics),
-    Body = jsone:encode(Metrics),
+    Body = rolnik_event:call(rolnik_timeseries_handler, {json, temperatures}),
     case is_binary(Body) of
         false ->
             {<<>>, Req, State};

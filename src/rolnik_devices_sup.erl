@@ -21,8 +21,13 @@ init([]) ->
 %--- Internal ------------------------------------------------------------------
 
 detect() ->
-    IDs = grisp_onewire:transaction(fun() -> grisp_onewire:search() end),
-    [child_spec(ID) || ID <- IDs].
+    try grisp_onewire:transaction(fun() -> grisp_onewire:search() end) of
+        IDs ->
+            [child_spec(ID) || ID <- IDs]
+    catch
+        _:_ ->
+            []
+    end.
 
 child_spec(ID) ->
     #{ id => list_to_atom(ID),

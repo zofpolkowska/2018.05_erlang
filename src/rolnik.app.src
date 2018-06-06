@@ -11,12 +11,15 @@
         folsom,
         inets,
         crypto,
-        cowboy
+        ranch,
+        cowlib,
+        cowboy,
+        jsone
     ]},
     {env,
      [
       {folsom, [{gauge, [temperature]}]},
-      {sample_interval, 1000}, %miliseconds  
+      {sample_interval, 60000}, %miliseconds  
       {refresh_interval, 5}, %seconds
       {time_range, 24} % hours
      ]},
