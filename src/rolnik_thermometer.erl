@@ -12,18 +12,19 @@
 -export([reachable/3, unreachable/3, loading/3]). %TODO  unplugged/3
 
 %--- API -----------------------------------------------------------------------
-start_link(ID) ->
-    gen_statem:start_link({local, ?MODULE}, ?MODULE, [ID], []).
+start_link(Device) ->
+    gen_statem:start_link({local, ?MODULE}, ?MODULE, [Device], []).
 
 %--- Callbacks -----------------------------------------------------------------
 callback_mode() -> state_functions.
 
-init([ID]) ->
+init([Device]) ->
     {ok, Interval} = application:get_env(rolnik, sample_interval),
+    [ID] = grisp_onewire:transaction(fun() -> grisp_onewire:search() end),
     {ok, loading, #device{id = ID, type = thermometer}, [{state_timeout,Interval,{enter, Interval}}]}.
 
 loading(state_timeout, {enter, Interval}, T) ->
-    rolnik_event:notify({new, temperatures}),
+    rolnik_event:sync_notify({new, temperatures}),
     {next_state, reachable, T, [{state_timeout, Interval, {read, Interval}}]}.
 
 reachable(state_timeout, {read, Interval}, T) ->
@@ -31,14 +32,14 @@ reachable(state_timeout, {read, Interval}, T) ->
     case read_temperature(T) of
         E when is_number(E) ->
             NT = T#device{sample = E},
-            rolnik_event:notify({update, E, temperatures}),
+            rolnik_event:sync_notify({update, E, temperatures}),
             {next_state, reachable, NT, [{state_timeout,Interval,{read, Interval}}]};
         _ ->
             {next_state, unreachable, T, [{state_timeout, Interval, {check, Interval}}]}
     end.
 
 unreachable(state_timeout, {check, Interval}, T) ->
-    rolnik_event:notify({error, T}), % TODO
+    rolnik_event:sync_notify({error, T}), % TODO
     {next_state, reachable, T, [{state_timeout, Interval, {read, Interval}}]}.
 
 %TODO alerted

@@ -7,8 +7,6 @@
         kernel,
         stdlib,
         grisp,
-        bear,
-        folsom,
         inets,
         crypto,
         ranch,
@@ -18,7 +16,10 @@
     ]},
     {env,
      [
-      {folsom, [{gauge, [temperature]}]},
+      {devices,[
+                {ds18b20, [temperature]},
+                {pmod_hygro, [humidity, temperature]}
+               ]},
       {sample_interval, 60000}, %miliseconds  
       {refresh_interval, 5}, %seconds
       {time_range, 24} % hours

@@ -10,8 +10,7 @@
 
 %--- Callbacks -----------------------------------------------------------------
 
-start(_Type, _Args) ->
-    
+start(_Type, _Args) ->    
     rolnik_sup:start_link().
 
 stop(_State) -> ok.

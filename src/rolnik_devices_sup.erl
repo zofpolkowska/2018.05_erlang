@@ -2,7 +2,7 @@
 -behavior(supervisor).
 
 %API
--export([start_link/0, detect/0]).
+-export([start_link/0]).
 
 %Callbacks
 -export([init/1]).
@@ -15,21 +15,15 @@ start_link() ->
 %--- Callbacks -----------------------------------------------------------------
 
 init([]) ->
-    Devices = detect(),
+    Devices = [
+               worker(pmod_hygro, []), %% device driver
+               worker(rolnik_thermometer, [ds18b20]), %% device manager
+               worker(rolnik_hygro, [pmod_hygro]) %% device manager
+              ],
     {ok, {{one_for_one, 5, 60}, Devices}}.
 
 %--- Internal ------------------------------------------------------------------
-
-detect() ->
-    try grisp_onewire:transaction(fun() -> grisp_onewire:search() end) of
-        IDs ->
-            [child_spec(ID) || ID <- IDs]
-    catch
-        _:_ ->
-            []
-    end.
-
-child_spec(ID) ->
-    #{ id => list_to_atom(ID),
-     start => {rolnik_thermometer, start_link, [ID]},
-     modules => [rolnik_thermometer]}.
+worker(Module, Args) ->
+    #{ id => Module,
+       start => {Module, start_link, Args},
+       modules => [Module]}.

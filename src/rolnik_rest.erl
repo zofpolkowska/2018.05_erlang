@@ -8,7 +8,7 @@
 start_link() ->
     Dispatch = cowboy_router:compile([
                                       {'_', [
-                                             {"/", rolnik_toppage_handler, []},
+                                             {"/[:metric]", rolnik_toppage_handler, []},
                                              {"/search", rolnik_search_handler, []},
                                              {"/annotations", rolnik_annotations_handler, []},
                                              {"/query", rolnik_query_handler, []}

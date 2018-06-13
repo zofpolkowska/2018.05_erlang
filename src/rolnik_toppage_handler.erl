@@ -14,7 +14,17 @@ content_types_provided(Req, State) ->
      ], Req, State}.
 
 handle(Req, State) ->
-    Body = rolnik_event:call(rolnik_timeseries_handler, {json, temperatures}),
+    Bind = cowboy_req:binding(metric, Req, <<"temperatures">>),
+    Body = case binary_to_atom(Bind, utf8) of
+               temperatures ->
+                   rolnik_event:call(rolnik_timeseries_handler, {json, temperatures});
+               pmod_hygro_temperature ->
+                   rolnik_event:call(rolnik_timeseries_handler, {json, pmod_hygro_temperature});
+               pmod_hygro_humidity ->
+                   rolnik_event:call(rolnik_timeseries_handler, {json, pmod_hygro_humidity});
+               _ ->
+                   <<"make GET request to /search path and check available metrics\"">>
+           end,
     case is_binary(Body) of
         false ->
             {<<>>, Req, State};
