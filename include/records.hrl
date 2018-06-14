@@ -1,4 +1,4 @@
--record(device, {id, type, sample}).
+-record(device, {id, type, sample, metric}).
 -record(metric, {sample, timestamp}).
 -record(state, {metrics}).
 

@@ -2,6 +2,6 @@
 -define(DEVICE_WRITE, 16#40).
 -define(TEMP_REG, 16#00).
 -define(HUMI_REG, 16#01).
--define(DIVIDER, 65536).
+-define(DIVIDER, 16384).
 
 -record(state, {slot, mode}).
