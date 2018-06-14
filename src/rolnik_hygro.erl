@@ -63,8 +63,26 @@ metric(Driver, Name) ->
     rolnik_event:sync_notify({new, FullName}).
 
 get_humidity(_State) ->
-    {_, H} = gen_server:call(pmod_hygro, humidity),
-    rolnik_event:sync_notify({update, H, pmod_hygro_humidity}).
+    try gen_server:call(pmod_hygro, humidity) of
+        {_, H} when is_number(H) ->
+            rolnik_event:sync_notify({update, H, pmod_hygro_humidity});
+        {_, _} ->
+            rolnik_event:sync_notify({update, null, pmod_hygro_humidity})
+    catch
+        _:_ ->
+            rolnik_event:sync_notify({crashed, ?MODULE}),
+            rolnik_event:sync_notify({crashed, pmod_hygro})
+    end.
+
 get_temperature(_State) ->
-    {_, H} = gen_server:call(pmod_hygro, temperature),
-    rolnik_event:sync_notify({update, H, pmod_hygro_temperature}).
+    try gen_server:call(pmod_hygro, temperature) of
+        {_, T} when is_number(T) ->
+            rolnik_event:sync_notify({update, T, pmod_hygro_temperature});
+        {_,_} ->
+            rolnik_event:sync_notify({update, null, pmod_hygro_temperature})
+    catch
+        _:_ ->
+            rolnik_event:sync_notify({crashed, ?MODULE}),
+            rolnik_event:sync_notify({crashed, pmod_hygro})
+    end.
+

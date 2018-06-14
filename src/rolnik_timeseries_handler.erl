@@ -22,6 +22,10 @@ handle_event({new, Metric}, State) ->
     NewState = #state{metrics = [Metric|Metrics]},
     {ok, NewState};
 
+handle_event({crashed, DeviceModule}, State) ->
+    supervisor:terminate_child(rolnik_devices_sup, DeviceModule),
+    {ok, State};
+
 handle_event({update, Value, Metric}, State) ->
     E = #metric{sample = Value, timestamp = timestamp()},
     ets:insert(Metric, E),
@@ -31,7 +35,13 @@ handle_event(_Event, State) ->
     {ok, State}.
 
 handle_call({list, Metric}, State) ->
-    Records = ets:tab2list(Metric),
+    Records = try ets:tab2list(Metric) of
+                  List ->
+                      List
+              catch
+                  _:_ ->
+                      []
+              end,
     {ok, Records, State};
 
 handle_call({json, Metric}, State) ->
