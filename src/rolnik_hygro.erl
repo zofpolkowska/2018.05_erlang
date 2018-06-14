@@ -21,7 +21,6 @@ callback_mode() -> state_functions.
 
 
 init([Driver]) ->
-    %% ENVs to conf
     {ok, T} = application:get_env(rolnik, sample_interval),
     {ok, loading, #device{type = Driver}, [{state_timeout,T, {enter, T}}]}.
 
@@ -31,7 +30,8 @@ state_name({call,Caller}, _Msg, Data) ->
 loading(state_timeout, {enter, T}, State) ->
     Driver = State#device.type,
     %List = application:get_env(devices),
-    Metrics = [humidity, temperature], %Metrics = proplists:get_value(List, Driver),
+    %Metrics = proplists:get_value(List, Driver),
+    Metrics = [humidity, temperature], 
     lists:map(fun(Name) ->
                       metric(Driver, Name) end,
               Metrics),
